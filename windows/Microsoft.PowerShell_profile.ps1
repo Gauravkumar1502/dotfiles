@@ -1,4 +1,4 @@
-# Setup Oh-My-Posh Theme
+# Set the default theme for Oh-My-Posh
 
 # oh-my-posh init pwsh --config 'C:\Users\gaura\AppData\Local\Programs\oh-my-posh\themes\1_shell.omp.json' | Invoke-Expression
 # oh-my-posh init pwsh --config 'C:\Users\gaura\AppData\Local\Programs\oh-my-posh\themes\catppuccin_frappe.omp.json' | Invoke-Expression
@@ -11,3 +11,6 @@ oh-my-posh init pwsh --config 'C:\Users\gaura\AppData\Local\Programs\oh-my-posh\
 # Install-Module -Name Terminal-Icons -Repository PSGallery
 # Then Import the module
 Import-Module -Name Terminal-Icons
+
+# Set Alias for 'cat' command to 'bat'
+Set-Alias -Name cat -Value bat
