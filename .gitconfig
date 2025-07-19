@@ -1,0 +1,16 @@
+[user]
+	email = gauravkumar15021999@gmail.com
+	name = Gaurav Kumar
+[core]
+	compression = 9
+	preloadindex = true
+[column]
+	ui = auto
+[branch]
+	sort = -committerdate
+[init]
+	defaultBranch = main
+[diff]
+	colorMoved = plain
+[push]
+	default = simple

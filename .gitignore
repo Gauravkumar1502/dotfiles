@@ -1,0 +1,19 @@
+# History files
+.zsh_history
+.bash_history
+.python_history
+.node_repl_history
+
+# Cache directories
+.cache/
+.npm/
+.yarn/
+
+# Logs
+*.log
+
+# Sensitive files
+.ssh/
+.gnupg/
+.aws/
+.kube/
