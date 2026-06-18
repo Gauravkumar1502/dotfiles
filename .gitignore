@@ -13,7 +13,9 @@
 *.log
 
 # Sensitive files
-.ssh/
+# SSH: ignore everything by default, but keep shared config in repo
+.ssh/*
+!.ssh/config
 .gnupg/
 .aws/
 .kube/
