@@ -4,28 +4,38 @@ This repository contains my personal configuration files managed with GNU Stow.
 
 ## Usage
 
-To install all configurations:
+Always run Stow with an explicit target directory (`-t "$HOME"`) so links are created in your home directory.
+
+1) Preview first (conflict check, no filesystem changes):
 
 ```bash
 cd ~/dotfiles
-stow .
+stow -nvR -t "$HOME" .
 ```
 
-To remove configurations:
+2) Install/update symlinks after preview looks correct:
 
 ```bash
-stow -D .
+stow -vR -t "$HOME" .
 ```
 
-To update after making changes:
+3) Remove symlinks managed by this repo:
 
 ```bash
-stow -R .
+stow -vD -t "$HOME" .
 ```
+
+Flags used:
+
+- `-n`: dry-run mode (test only)
+- `-v`: verbose output
+- `-R`: restow (relink/update)
+- `-D`: delete/unlink stowed symlinks
+- `-t "$HOME"`: target directory for links
 
 ## Structure
 
-This dotfiles repository follows the same directory structure as the home directory, allowing for easy management with `stow .`.
+This dotfiles repository follows the same directory structure as the home directory, allowing for easy management with `stow -t "$HOME" .`.
 
 ### Currently Managed Configurations
 
@@ -39,26 +49,11 @@ This dotfiles repository follows the same directory structure as the home direct
 1. Create the same directory structure as in your home directory
 2. Copy your config files to the corresponding location in dotfiles
 3. Remove the original files from your home directory
-4. Run `stow .` to create symlinks
-
-Example:
-
-```bash
-# For a new app config
-cp ~/.config/newapp/config.conf ~/dotfiles/.config/newapp/
-rm ~/.config/newapp/config.conf
-cd ~/dotfiles && stow .
-```
-
-## Features
-
-✅ **One-command installation**: Just run `stow .`  
-✅ **Automatic symlink management**: Stow handles all the linking  
-✅ **Version controlled**: All configs are tracked in git  
-✅ **Easy updates**: Changes in dotfiles automatically reflect in your system
+4. Preview with `stow -nvR -t "$HOME" .`, then run `stow -vR -t "$HOME" .`
 
 ## Notes
 
 - Files that shouldn't be version controlled (like histories, logs, caches) are excluded via `.gitignore`
 - Sensitive files should be handled separately or encrypted
 - Always backup your existing configs before stowing
+- Avoid `--adopt` unless you explicitly want Stow to move local files into this repo
