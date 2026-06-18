@@ -1,16 +1,68 @@
 [user]
 	email = gauravkumar15021999@gmail.com
 	name = Gaurav Kumar
+
 [core]
-	compression = 9
-	preloadindex = true
+	compression = 9              # Maximum compression for stored objects (0-9, higher = smaller but slower)
+	preloadindex = true          # Preload index into memory for faster operations on large repos
+
+[alias]
+	st = status                  # Quick status
+	co = checkout                # Quick checkout
+	br = branch                  # Quick branch listing
+	cm = commit -m               # Commit with message
+	log1 = log --oneline --graph --all  # Pretty log view
+	amend = commit --amend --no-edit    # Amend last commit without editing message
+	unstage = restore --staged   # Unstage files
+	# ========== AUTO-STASH ALIASES ==========
+	switch-safe = "!f() { target=\"$1\"; [ -n \"$target\" ] || { echo \"Usage: git switch-safe <branch>\"; return 1; }; stashed=0; if [ -n \"$(git status --porcelain)\" ]; then git stash push -u -m \"auto-stash before switch to $target\" >/dev/null && stashed=1; fi; git switch \"$target\" || { [ \"$stashed\" -eq 1 ] && git stash pop >/dev/null; return 1; }; [ \"$stashed\" -eq 1 ] && git stash pop; }; f"
+	# Usage: git switch-safe feature-branch
+	# Stashes local changes (including untracked), switches branch, then restores stash
+	stash-list = stash list --pretty=format:'%gd: %h %gs'  # Better stash list display
+	stash-show-all = "!f() { git stash show -p $1; }; f"   # Show full stash content
+
+# COLUMN - Output formatting
 [column]
-	ui = auto
+	ui = auto                    # Auto-format list output (branches, tags) in columns
+
+# BRANCH - Branch display and behavior
 [branch]
-	sort = -committerdate
+	sort = -committerdate        # Sort branches by most recent commit (newest first)
+
 [init]
-	defaultBranch = main
+	defaultBranch = main         # Use 'main' instead of 'master' for new repos
+
 [diff]
-	colorMoved = plain
+	colorMoved = plain           # Highlight moved code blocks in diffs
+	algorithm = histogram        # Better diff hunk grouping for refactors
+
+[status]
+	showUntrackedFiles = all     # Show all untracked files (default: normal)
+	short = false                # Use long format (set to true for short format)
+
+[merge]
+	conflictstyle = zdiff3       # Better conflict markers (shows common ancestor)
+	ff = false                   # Always create merge commits (no fast-forward by default)
+	autoStash = true             # Auto-stash uncommitted changes before merge
+
+[rebase]
+	autostash = true             # Auto-stash uncommitted changes before rebase
+	autoSquash = true            # Auto-order fixup!/squash! commits during interactive rebase
+	updateRefs = true            # Update local branches that point to rebased commits
+	# Creates stashes with names like "autostash@{0}" that can be recovered if needed
+
+[fetch]
+	prune = true                 # Remove deleted remote-tracking branches on fetch
+
+# PUSH - Push behavior
 [push]
-	default = simple
+	default = simple             # Push only current branch (safer than all)
+	autoSetupRemote = true       # Auto-set upstream on first push of a new branch
+
+[color]
+	ui = auto                    # Enable colors only when writing to terminal
+	diff = auto                  # Auto-detect if diff should be colored
+
+# LOG - Log formatting
+[log]
+	date = short                 # Use short date format (YYYY-MM-DD)
