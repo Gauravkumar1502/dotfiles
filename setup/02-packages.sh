@@ -1,0 +1,39 @@
+#!/usr/bin/env bash
+# Installs packages for the given package manager. Package lists live below in
+# one associative array: key = package manager, value = space-separated packages
+# (bash assoc-array values are scalars, so a list is just a string we split later).
+set -euo pipefail
+
+declare -A PACKAGES=(
+  [apt]="git curl unzip zsh stow kitty neovim sway waybar dunst fzf bat"
+  [dnf]="git curl unzip zsh stow kitty neovim sway waybar dunst fzf bat code brave-browser"
+  [pacman]="git curl unzip zsh stow kitty neovim sway waybar dunst fzf bat"
+  [paru]="git curl unzip zsh stow kitty neovim sway waybar dunst fzf bat"
+)
+
+PM="${1:-}"
+
+if [[ -z "$PM" || -z "${PACKAGES[$PM]+x}" ]]; then
+  echo "Usage: $0 <${!PACKAGES[*]}>" >&2
+  exit 1
+fi
+
+read -ra PKGS <<< "${PACKAGES[$PM]}"
+
+echo "Installing packages with $PM: ${PKGS[*]}"
+
+case "$PM" in
+  apt)
+    sudo apt update
+    sudo apt install -y "${PKGS[@]}"
+    ;;
+  dnf)
+    sudo dnf install -y "${PKGS[@]}"
+    ;;
+  pacman)
+    sudo pacman -Syu --needed --noconfirm "${PKGS[@]}"
+    ;;
+  paru)
+    paru -Syu --needed --noconfirm "${PKGS[@]}"
+    ;;
+esac
