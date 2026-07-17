@@ -14,7 +14,7 @@ configure_dnf_repos() {
   sudo dnf install -y dnf-plugins-core
 
   echo "Adding Brave repository..."
-  sudo dnf config-manager addrepo --from-repofile="https://brave-browser-rpm-release.s3.brave.com/brave-browser.repo"
+  sudo dnf config-manager addrepo --overwrite --from-repofile="https://brave-browser-rpm-release.s3.brave.com/brave-browser.repo"
 
   echo "Adding VS Code repository..."
   sudo rpm --import "https://packages.microsoft.com/keys/microsoft.asc"
