@@ -2,10 +2,13 @@
 # Installs Oh My Zsh (if missing) and clones the plugin/theme repos used by .zshrc / .p10k.zsh.
 set -euo pipefail
 
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+source "$SCRIPT_DIR/common.sh"
+
 ZSH_CUSTOM="${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}"
 
 if [[ ! -d "$HOME/.oh-my-zsh" ]]; then
-  echo "Installing Oh My Zsh..."
+  print_info "Installing Oh My Zsh..."
   RUNZSH=no CHSH=no KEEP_ZSHRC=yes sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
 fi
 
@@ -22,9 +25,9 @@ for entry in "${PLUGIN_REPOS[@]}"; do
   IFS='|' read -r name url type <<< "$entry"
   target="$ZSH_CUSTOM/$type/$name"
   if [[ -d "$target" ]]; then
-    echo "$name already present, skipping."
+    print_warn "$name already present, skipping."
   else
-    echo "Cloning $name..."
+    print_info "Cloning $name..."
     git clone --depth=1 "$url" "$target"
   fi
 done

@@ -3,15 +3,16 @@
 set -euo pipefail
 
 SETUP_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+source "$SETUP_DIR/common.sh"
 
-echo "Select your package manager:"
+print_info "Select your package manager:"
 select PM in apt dnf pacman paru; do
   [[ -n "$PM" ]] && break
-  echo "Invalid choice, try again."
+  print_warn "Invalid choice, try again."
 done
 
 if ! command -v "$PM" >/dev/null 2>&1; then
-  echo "Error: '$PM' is not installed on this system." >&2
+  print_error "Error: '$PM' is not installed on this system."
   exit 1
 fi
 
@@ -25,4 +26,4 @@ fi
 "$SETUP_DIR/08-stow-dotfiles.sh"
 
 echo
-echo "Setup complete."
+print_success "Setup complete."

@@ -2,21 +2,24 @@
 # Configures third-party repositories required by package installation.
 set -euo pipefail
 
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+source "$SCRIPT_DIR/common.sh"
+
 PM="${1:-}"
 
 if [[ -z "$PM" ]]; then
-  echo "Usage: $0 <package-manager>" >&2
+  print_error "Usage: $0 <package-manager>"
   exit 1
 fi
 
 configure_dnf_repos() {
-  echo "Installing dnf-plugins-core..."
+  print_info "Installing dnf-plugins-core..."
   sudo dnf install -y dnf-plugins-core
 
-  echo "Adding Brave repository..."
+  print_info "Adding Brave repository..."
   sudo dnf config-manager addrepo --overwrite --from-repofile="https://brave-browser-rpm-release.s3.brave.com/brave-browser.repo"
 
-  echo "Adding VS Code repository..."
+  print_info "Adding VS Code repository..."
   sudo rpm --import "https://packages.microsoft.com/keys/microsoft.asc"
   sudo tee /etc/yum.repos.d/vscode.repo >/dev/null <<'EOF'
 [code]
@@ -32,13 +35,13 @@ EOF
 
 case "$PM" in
   apt|pacman|paru)
-    echo "No extra repositories configured for $PM."
+    print_info "No extra repositories configured for $PM."
     ;;
   dnf)
     configure_dnf_repos
     ;;
   *)
-    echo "Unsupported package manager: $PM" >&2
+    print_error "Unsupported package manager: $PM"
     exit 1
     ;;
 esac

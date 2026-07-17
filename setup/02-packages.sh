@@ -4,6 +4,9 @@
 # (bash assoc-array values are scalars, so a list is just a string we split later).
 set -euo pipefail
 
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+source "$SCRIPT_DIR/common.sh"
+
 declare -A PACKAGES=(
   [apt]="git curl unzip zsh stow kitty neovim sway waybar dunst fzf bat"
   [dnf]="git curl unzip zsh stow kitty neovim sway waybar dunst fzf bat code brave-browser"
@@ -14,13 +17,13 @@ declare -A PACKAGES=(
 PM="${1:-}"
 
 if [[ -z "$PM" || -z "${PACKAGES[$PM]+x}" ]]; then
-  echo "Usage: $0 <${!PACKAGES[*]}>" >&2
+  print_error "Usage: $0 <${!PACKAGES[*]}>"
   exit 1
 fi
 
 read -ra PKGS <<< "${PACKAGES[$PM]}"
 
-echo "Installing packages with $PM: ${PKGS[*]}"
+print_info "Installing packages with $PM: ${PKGS[*]}"
 
 case "$PM" in
   apt)

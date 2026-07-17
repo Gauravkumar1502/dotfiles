@@ -2,10 +2,13 @@
 # Installs font packages and Nerd Fonts system-wide.
 set -euo pipefail
 
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+source "$SCRIPT_DIR/common.sh"
+
 PM="${1:-}"
 
 if [[ -z "$PM" ]]; then
-  echo "Usage: $0 <package-manager>" >&2
+  print_error "Usage: $0 <package-manager>"
   exit 1
 fi
 
@@ -15,10 +18,10 @@ install_font_packages() {
       sudo dnf install -y fira-code-fonts jetbrains-mono-fonts
       ;;
     apt|pacman|paru)
-      echo "No distro font package step configured for $PM."
+      print_info "No distro font package step configured for $PM."
       ;;
     *)
-      echo "Unsupported package manager: $PM" >&2
+      print_error "Unsupported package manager: $PM"
       exit 1
       ;;
   esac
@@ -44,17 +47,17 @@ install_nerd_fonts() {
     font_zip_url="https://github.com/ryanoasis/nerd-fonts/releases/latest/download/$font_name.zip"
 
     if [[ -d "$font_dir" ]] && compgen -G "$font_dir/*.ttf" >/dev/null; then
-      echo "$font_name Nerd Font already installed in $font_dir."
+      print_warn "$font_name Nerd Font already installed in $font_dir."
       continue
     fi
 
-    echo "Downloading $font_name Nerd Font (latest release)..."
+    print_info "Downloading $font_name Nerd Font (latest release)..."
     curl -fsSL "$font_zip_url" -o "$tmpdir/$font_name.zip"
 
     unzip -qo "$tmpdir/$font_name.zip" -d "$tmpdir/$font_name"
     sudo mkdir -p "$font_dir"
     sudo install -m 0644 "$tmpdir"/$font_name/*.ttf "$font_dir"/
-    echo "Installed $font_name Nerd Font into $font_dir"
+    print_success "Installed $font_name Nerd Font into $font_dir"
   done
 
   sudo fc-cache -f
