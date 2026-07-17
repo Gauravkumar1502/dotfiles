@@ -37,7 +37,7 @@ install_nerd_fonts() {
   )
 
   tmpdir="$(mktemp -d)"
-  trap 'rm -rf "$tmpdir"' EXIT
+  trap '[[ -n "${tmpdir:-}" ]] && rm -rf -- "$tmpdir"' EXIT
 
   for font_name in "${font_names[@]}"; do
     font_dir="$nerd_fonts_root/$font_name"
