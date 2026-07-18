@@ -9,7 +9,7 @@ source "$SCRIPT_DIR/common.sh"
 
 declare -A PACKAGES=(
   [apt]="git curl unzip zsh stow kitty neovim sway waybar dunst fzf bat rofi grim slurp wl-clipboard cliphist"
-  [dnf]="git curl unzip zsh stow kitty neovim sway waybar dunst fzf bat rofi grim slurp wl-clipboard cliphist code brave-browser"
+  [dnf]="git curl unzip zsh stow kitty neovim sway waybar dunst fzf bat fastfetch rofi grim slurp wl-clipboard cliphist code brave-browser"
   [pacman]="git curl unzip zsh stow kitty neovim sway waybar dunst fzf bat rofi grim slurp wl-clipboard cliphist"
   [paru]="git curl unzip zsh stow kitty neovim sway waybar dunst fzf bat rofi grim slurp wl-clipboard cliphist"
 )
