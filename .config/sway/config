@@ -15,6 +15,10 @@ set $up k
 set $right l
 # Your preferred terminal emulator
 set $term kitty
+# Your preferred browser
+set $browser brave-browser
+# Your preferred file manager launcher
+set $file_manager xdg-open "$HOME"
 # Your preferred application launcher
 # Note: pass the final command to swaymsg so that the resulting window can be opened
 # on the original workspace that the command was run on.
@@ -78,8 +82,14 @@ output HDMI-A-5 {
     # Start a terminal
     bindsym $mod+Return exec $term
 
+    # Start your browser
+    bindsym $mod+Shift+b exec $browser
+
+    # Open file manager/home folder
+    bindsym $mod+Shift+f exec $file_manager
+
     # Kill focused window
-    bindsym $mod+Shift+q kill
+    bindsym $mod+q kill
 
     # Start your launcher
     bindsym $mod+space exec $menu
