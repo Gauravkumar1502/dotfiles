@@ -8,10 +8,10 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 source "$SCRIPT_DIR/common.sh"
 
 declare -A PACKAGES=(
-  [apt]="git curl unzip zsh stow kitty neovim sway waybar dunst fzf bat rofi grim slurp wl-clipboard cliphist"
-  [dnf]="git curl unzip zsh stow kitty neovim sway waybar dunst fzf bat fastfetch rofi grim slurp wl-clipboard cliphist code brave-browser"
-  [pacman]="git curl unzip zsh stow kitty neovim sway waybar dunst fzf bat rofi grim slurp wl-clipboard cliphist"
-  [paru]="git curl unzip zsh stow kitty neovim sway waybar dunst fzf bat rofi grim slurp wl-clipboard cliphist"
+  [apt]="git curl unzip zsh stow kitty neovim sway waybar dunst fzf bat ripgrep fd-find rofi grim slurp wl-clipboard cliphist"
+  [dnf]="git curl unzip zsh stow kitty neovim sway waybar dunst fzf bat ripgrep fd-find fastfetch rofi grim slurp wl-clipboard cliphist code brave-browser"
+  [pacman]="git curl unzip zsh stow kitty neovim sway waybar dunst fzf bat ripgrep fd rofi grim slurp wl-clipboard cliphist"
+  [paru]="git curl unzip zsh stow kitty neovim sway waybar dunst fzf bat ripgrep fd rofi grim slurp wl-clipboard cliphist"
 )
 
 PM="${1:-}"
