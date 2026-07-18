@@ -13,6 +13,11 @@ set $left h
 set $down j
 set $up k
 set $right l
+
+# Layout spacing and border thickness
+set $gaps_inner 8
+set $gaps_outer 6
+set $border_px 2
 # Your preferred terminal emulator
 set $term kitty
 # Your preferred browser
@@ -251,3 +256,14 @@ bindsym $mod+r mode "resize"
 # the trick, it's all in the `wordexp(3)`.
 #
 include '$(/usr/libexec/sway/layered-include "/usr/share/sway/config.d/*.conf" "/etc/sway/config.d/*.conf" "${XDG_CONFIG_HOME:-$HOME/.config}/sway/config.d/*.conf")'
+
+# Override defaults after layered include
+gaps inner $gaps_inner
+gaps outer $gaps_outer
+default_border pixel $border_px
+default_floating_border pixel $border_px
+
+# Rounded corners are not supported in vanilla Sway.
+# If you switch to swayfx, you can uncomment and tune these:
+# set $corner_radius 10
+# corner_radius $corner_radius
