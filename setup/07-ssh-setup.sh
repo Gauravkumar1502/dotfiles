@@ -71,7 +71,7 @@ if [[ -f "$KEY_PATH" ]]; then
 
     case "$action_choice" in
       1)
-        print_warn "Keeping existing SSH key."
+print_warn "Keeping existing SSH key."
         break
         ;;
       2)
@@ -90,7 +90,7 @@ else
 fi
 
 echo
-print_info "Public key (add/update this in your GitHub profile: https://github.com/settings/keys):"
+print_info "Public key. Add or update it in your GitHub profile: https://github.com/settings/keys"
 echo
 while IFS= read -r line; do
   print_key "$line"
