@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # Shared helpers for setup scripts.
 
-if [[ -t 1 ]]; then
+if [[ "${FORCE_COLOR:-0}" == "1" || -t 1 ]]; then
   COLOR_GREEN='\033[0;32m'
   COLOR_YELLOW='\033[1;33m'
   COLOR_CYAN='\033[0;36m'
