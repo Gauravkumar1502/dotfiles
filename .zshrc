@@ -140,6 +140,13 @@ alias ls='ls --color'
 alias cat='bat --style=plain --color=always'
 alias grep='grep --color=auto'
 
+if command -v fd >/dev/null 2>&1; then
+  alias find='fd'
+elif command -v fdfind >/dev/null 2>&1; then
+  alias fd='fdfind'
+  alias find='fdfind'
+fi
+
 #THIS MUST BE AT THE END OF THE FILE FOR SDKMAN TO WORK!!!
 export SDKMAN_DIR="$HOME/.sdkman"
 [[ -s "$HOME/.sdkman/bin/sdkman-init.sh" ]] && source "$HOME/.sdkman/bin/sdkman-init.sh"
