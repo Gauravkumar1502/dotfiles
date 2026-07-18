@@ -136,7 +136,12 @@ setopt EXTENDED_HISTORY
 export PATH="$HOME/.opencode/bin:$PATH"
 
 # Custom Aliases
-alias ls='ls --color'
+if command -v eza >/dev/null 2>&1; then
+  alias ls='eza --icons=auto'
+  alias ll='eza -lah --icons=auto --group-directories-first'
+else
+  alias ls='ls --color'
+fi
 alias cat='bat --style=plain --color=always'
 alias grep='grep --color=auto'
 
