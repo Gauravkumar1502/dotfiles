@@ -7,7 +7,11 @@
     "host",
     "kernel",
     "uptime",
-    "packages",
+    {
+      "type": "packages",
+      "combined": false,
+      "format": "rpm: {rpm}, flatpak: {flatpak-all}, total: {all}"
+    },
     "shell",
     "display",
     "de",
@@ -19,6 +23,16 @@
     "cursor",
     "terminal",
     "terminalfont",
+    {
+      "type": "command",
+      "key": "Git",
+      "text": "git --version"
+    },
+    {
+      "type": "command",
+      "key": "Neovim",
+      "text": "nvim --version | head -n 1"
+    },
     "cpu",
     "gpu",
     "memory",
