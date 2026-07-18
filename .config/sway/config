@@ -30,6 +30,10 @@ set $rofi_cmd rofi \
 # TODO: add window with the next release of rofi-wayland
 set $menu $rofi_cmd -show combi -combi-modes drun#run -modes combi
 
+### Autostart clipboard history watchers
+exec wl-paste --type text --watch cliphist store
+exec wl-paste --type image --watch cliphist store
+
 ### Output configuration
 #
 # Default wallpaper (more resolutions are available in /usr/share/backgrounds/sway/)
@@ -87,6 +91,12 @@ output HDMI-A-5 {
 
     # Open file manager/home folder
     bindsym $mod+Shift+f exec $file_manager
+
+    # Open clipboard history menu (text/images) and copy selection back to clipboard
+    bindsym $mod+v exec cliphist list | rofi -dmenu -i -p "Clipboard" | cliphist decode | wl-copy
+
+    # Screenshot selected region to clipboard
+    bindsym $mod+Shift+s exec grim -g "$(slurp)" - | wl-copy
 
     # Kill focused window
     bindsym $mod+q kill
@@ -164,7 +174,7 @@ output HDMI-A-5 {
     # $mod+b or $mod+v, for horizontal and vertical splits
     # respectively.
     bindsym $mod+b splith
-    bindsym $mod+v splitv
+    # bindsym $mod+v splitv
 
     # Switch the current container between different layout styles
     bindsym $mod+s layout stacking
