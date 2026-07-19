@@ -15,7 +15,6 @@ fi
 # name|git url|type(plugins|themes) -- mirrors plugins=(...) and ZSH_THEME in .zshrc
 PLUGIN_REPOS=(
   "zsh-autosuggestions|https://github.com/zsh-users/zsh-autosuggestions|plugins"
-  "zsh-syntax-highlighting|https://github.com/zsh-users/zsh-syntax-highlighting|plugins"
   "fast-syntax-highlighting|https://github.com/zdharma-continuum/fast-syntax-highlighting|plugins"
   "zsh-autocomplete|https://github.com/marlonrichert/zsh-autocomplete|plugins"
   "powerlevel10k|https://github.com/romkatv/powerlevel10k|themes"

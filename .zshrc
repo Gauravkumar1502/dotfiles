@@ -9,7 +9,7 @@ fi
 export PATH=$HOME/bin:$HOME/.local/bin:/usr/local/bin:$PATH
 
 # Added by Toolbox App
-export PATH="$PATH:/home/gaurav/.local/share/JetBrains/Toolbox/scripts"
+export PATH="$PATH:$HOME/.local/share/JetBrains/Toolbox/scripts"
 
 # Path to your Oh My Zsh installation.
 export ZSH="$HOME/.oh-my-zsh"
@@ -80,7 +80,7 @@ ZSH_THEME="powerlevel10k/powerlevel10k"
 # Custom plugins may be added to $ZSH_CUSTOM/plugins/
 # Example format: plugins=(rails git textmate ruby lighthouse)
 # Add wisely, as too many plugins slow down shell startup.
-plugins=(zsh-autosuggestions zsh-syntax-highlighting fast-syntax-highlighting zsh-autocomplete web-search)
+plugins=(zsh-autosuggestions fast-syntax-highlighting zsh-autocomplete web-search)
 
 source $ZSH/oh-my-zsh.sh
 
@@ -142,7 +142,11 @@ if command -v eza >/dev/null 2>&1; then
 else
   alias ls='ls --color'
 fi
-alias cat='bat --style=plain --color=always'
+if command -v batcat >/dev/null 2>&1; then
+  alias cat='batcat --style=plain --color=always'
+elif command -v bat >/dev/null 2>&1; then
+  alias cat='bat --style=plain --color=always'
+fi
 alias grep='grep --color=auto'
 
 if command -v fd >/dev/null 2>&1; then
