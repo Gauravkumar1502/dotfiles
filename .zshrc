@@ -142,18 +142,13 @@ if command -v eza >/dev/null 2>&1; then
 else
   alias ls='ls --color'
 fi
-if command -v batcat >/dev/null 2>&1; then
-  alias cat='batcat --style=plain --color=always'
-elif command -v bat >/dev/null 2>&1; then
-  alias cat='bat --style=plain --color=always'
+if ! command -v bat >/dev/null 2>&1 && command -v batcat >/dev/null 2>&1; then
+  alias bat='batcat'
 fi
 alias grep='grep --color=auto'
 
-if command -v fd >/dev/null 2>&1; then
-  alias find='fd'
-elif command -v fdfind >/dev/null 2>&1; then
+if ! command -v fd >/dev/null 2>&1 && command -v fdfind >/dev/null 2>&1; then
   alias fd='fdfind'
-  alias find='fdfind'
 fi
 
 #THIS MUST BE AT THE END OF THE FILE FOR SDKMAN TO WORK!!!
