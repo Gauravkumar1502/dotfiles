@@ -17,15 +17,6 @@ window#waybar.hidden {
     opacity: 0.2;
 }
 
-/*
-window#waybar.empty {
-    background-color: transparent;
-}
-window#waybar.solo {
-    background-color: @background;
-}
-*/
-
 window#waybar.termite {
     background-color: @darker_background;
 }
@@ -49,11 +40,6 @@ button:hover {
     box-shadow: inset 0 -3px @foreground;
 }
 
-/* you can set a style on hover for any module like this */
-#pulseaudio:hover {
-    background-color: @color_orange;
-}
-
 #workspaces button {
     padding: 0 5px;
     background-color: transparent;
@@ -64,6 +50,7 @@ button:hover {
     background: alpha(@dark_background, 0.4);
 }
 
+/* Functional state indicators - not decoration, kept in theme colors */
 #workspaces button.focused, #workspaces button.active {
     background-color: @accent;
     box-shadow: inset 0 -3px @bright_foreground;
@@ -78,6 +65,11 @@ button:hover {
     box-shadow: inset 0 -3px @bright_foreground;
 }
 
+/* Single uniform look for every module - one background (transparent, so
+ * the bar's own @background shows through), one foreground. No per-module
+ * accent colors. */
+#window,
+#custom-separator,
 #clock,
 #battery,
 #cpu,
@@ -90,13 +82,21 @@ button:hover {
 #wireplumber,
 #custom-media,
 #tray,
-#mode,
 #idle_inhibitor,
 #scratchpad,
 #power-profiles-daemon,
+#language,
+#keyboard-state,
 #custom-theme_menu,
+#custom-power,
 #mpd {
-    padding: 0 10px;
+    padding: 0 6px;
+    background-color: transparent;
+    color: @foreground;
+}
+
+#custom-separator {
+    padding: 0 2px;
     color: @foreground;
 }
 
@@ -115,28 +115,43 @@ button:hover {
     margin-right: 0;
 }
 
-#clock {
-    background-color: @dark_background;
-}
-
-#battery {
-    background-color: @lighter_background;
-    color: @background;
-}
-
-#battery.charging, #battery.plugged {
-    color: @background;
-    background-color: @color_green;
-}
-
 @keyframes blink {
     to {
-        background-color: @bright_foreground;
-        color: @background;
+        background-color: @color_red;
+        color: @bright_foreground;
     }
 }
 
-/* Using steps() instead of linear as a timing function to limit cpu usage */
+/* CPU/memory/temperature: green (low) -> yellow (warning) -> red
+ * (critical), via waybar's built-in "states" thresholds. Functional load
+ * indicator, not decoration. */
+#cpu, #memory, #temperature {
+    color: @color_green;
+}
+
+#cpu.warning, #memory.warning, #temperature.warning {
+    color: @color_yellow;
+}
+
+#cpu.critical, #memory.critical, #temperature.critical {
+    color: @color_red;
+}
+
+/* Power profile: green (power-saver) -> yellow (balanced) -> red
+ * (performance), same low-to-high intensity gradient as cpu/memory. */
+#power-profiles-daemon.power-saver {
+    color: @color_green;
+}
+
+#power-profiles-daemon.balanced {
+    color: @color_yellow;
+}
+
+#power-profiles-daemon.performance {
+    color: @color_red;
+}
+
+/* Battery critical is a safety alert, not decoration - kept in theme red */
 #battery.critical:not(.charging) {
     background-color: @color_red;
     color: @bright_foreground;
@@ -147,147 +162,26 @@ button:hover {
     animation-direction: alternate;
 }
 
-#power-profiles-daemon {
-    padding-right: 15px;
-}
-
-#power-profiles-daemon.performance {
-    background-color: @color_red;
-    color: @bright_foreground;
-}
-
-#power-profiles-daemon.balanced {
-    background-color: @color_blue;
-    color: @bright_foreground;
-}
-
-#power-profiles-daemon.power-saver {
-    background-color: @color_green;
-    color: @background;
-}
-
-label:focus {
-    background-color: @darker_background;
-}
-
-#cpu {
-    background-color: @color_green;
-    color: @background;
-}
-
-#memory {
-    background-color: @color_magenta;
-}
-
-#disk {
-    background-color: @color_brown;
-}
-
-#backlight {
-    background-color: @muted;
-}
-
-#network {
-    background-color: @color_blue;
-}
-
+/* Network being down is a functional alert, not decoration */
 #network.disconnected {
     background-color: @color_red;
-}
-
-#pulseaudio {
-    background-color: @color_yellow;
-    color: @background;
-}
-
-#pulseaudio.muted {
-    background-color: @muted;
-    color: @dark_background;
-}
-
-#wireplumber {
-    background-color: @lighter_background;
-    color: @background;
-}
-
-#wireplumber.muted {
-    background-color: @color_red;
-}
-
-#custom-media {
-    background-color: @color_green;
-    color: @dark_background;
-    min-width: 100px;
-}
-
-#custom-media.custom-spotify {
-    background-color: @color_green;
-}
-
-#custom-media.custom-vlc {
-    background-color: @color_orange;
-}
-
-#temperature {
-    background-color: @color_orange;
-}
-
-#temperature.critical {
-    background-color: @color_red;
-}
-
-#tray {
-    background-color: @color_blue;
 }
 
 #tray > .passive {
     -gtk-icon-effect: dim;
 }
 
+/* Tray icon requesting attention is a functional alert, not decoration */
 #tray > .needs-attention {
     -gtk-icon-effect: highlight;
     background-color: @color_red;
 }
 
-#idle_inhibitor {
-    background-color: @darker_background;
-}
-
 #idle_inhibitor.activated {
-    background-color: @lighter_background;
-    color: @darker_background;
-}
-
-#mpd {
-    background-color: @color_green;
-    color: @dark_background;
-}
-
-#mpd.disconnected {
-    background-color: @color_red;
-}
-
-#mpd.stopped {
-    background-color: @muted;
-}
-
-#mpd.paused {
-    background-color: @color_green;
+    color: @accent;
 }
 
 #language {
-    background: @color_cyan;
-    color: @darker_background;
-    padding: 0 5px;
-    margin: 0 5px;
-    min-width: 16px;
-}
-
-#keyboard-state {
-    background: @lighter_background;
-    color: @darker_background;
-    padding: 0 0px;
-    margin: 0 5px;
     min-width: 16px;
 }
 
@@ -296,15 +190,11 @@ label:focus {
 }
 
 #keyboard-state > label.locked {
-    background: alpha(@dark_background, 0.2);
-}
-
-#scratchpad {
-    background: alpha(@dark_background, 0.2);
+    color: @accent;
 }
 
 #scratchpad.empty {
-	background-color: transparent;
+    color: @muted;
 }
 
 #privacy {
@@ -316,19 +206,8 @@ label:focus {
     color: @bright_foreground;
 }
 
-#privacy-item.screenshare {
-    background-color: @color_orange;
-}
-
-#privacy-item.audio-in {
-    background-color: @color_green;
-}
-
+#privacy-item.screenshare,
+#privacy-item.audio-in,
 #privacy-item.audio-out {
-    background-color: @color_blue;
-}
-
-#custom-theme_menu {
-    background-color: @accent;
-    color: @background;
+    background-color: @color_red;
 }

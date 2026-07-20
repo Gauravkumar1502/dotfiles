@@ -4,30 +4,38 @@
     // "position": "bottom", // Waybar position (top|bottom|left|right)
     "height": 30, // Waybar height (to be removed for auto height)
     // "width": 1280, // Waybar width
-    "spacing": 4, // Gaps between modules (4px)
+    "spacing": 2, // Gaps between modules (2px) - kept small since custom/separator now adds its own visible "|" between every right-side item
     // Choose the order of the modules
     "modules-left": [
         "sway/workspaces",
         "sway/mode",
-        "sway/scratchpad"
+        "sway/scratchpad",
+        "custom/separator",
+        "sway/window"
     ],
     "modules-center": [
-        "sway/window"
+        "clock"
     ],
     "modules-right": [
         "idle_inhibitor",
+        "custom/separator",
         "pulseaudio",
+        "custom/separator",
         "network",
+        "custom/separator",
         "power-profiles-daemon",
+        "custom/separator",
         "cpu",
+        "custom/separator",
         "memory",
+        "custom/separator",
         "temperature",
-        "backlight",
-        "sway/language",
-        "battery",
+        "custom/separator",
         "custom/theme_menu",
-        "clock",
-        "tray"
+        "custom/separator",
+        "tray",
+        "custom/separator",
+        "custom/power"
     ],
     // Modules configuration
     // "sway/workspaces": {
@@ -106,26 +114,50 @@
         //   "TelegramDesktop": "$HOME/.local/share/icons/hicolor/16x16/apps/telegram.png"
         // }
     },
+    "custom/separator": {
+        "format": "|",
+        "tooltip": false
+    },
     "clock": {
         // "timezone": "America/New_York",
+        "format": "{:%a %d %b  %I:%M %p}",
         "tooltip-format": "<big>{:%Y %B}</big>\n<tt><small>{calendar}</small></tt>",
         "format-alt": "{:%Y-%m-%d}"
     },
     "cpu": {
         "format": "{usage}% ",
-        "tooltip": false
+        "tooltip": false,
+        "states": {
+            "warning": 60,
+            "critical": 85
+        }
     },
     "memory": {
-        "format": "{}% "
+        "format": "{}% ",
+        "states": {
+            "warning": 70,
+            "critical": 90
+        }
     },
     "temperature": {
-        // "thermal-zone": 2,
-        // "hwmon-path": "/sys/class/hwmon/hwmon2/temp1_input",
+        // thermal_zone0 (acpitz, the previous default) is a generic
+        // ACPI sensor that mostly just reads ambient/board temperature
+        // (~27C) on this machine - thermal_zone1 is x86_pkg_temp, the
+        // actual CPU package sensor, which is the useful one to watch.
+        "thermal-zone": 1,
         "critical-threshold": 80,
-        // "format-critical": "{temperatureC}°C {icon}",
+        "states": {
+            "warning": 60,
+            "critical": 80
+        },
         "format": "{temperatureC}°C {icon}",
         "format-icons": ["", "", ""]
     },
+    // backlight/battery are defined but not in modules-right - this machine
+    // has no backlight control or battery (desktop), and showing them with
+    // no hardware left a stray double "|" separator on the bar. Add them
+    // back to modules-right (with a custom/separator on each side) if you
+    // move this config to a laptop.
     "backlight": {
         // "device": "acpi_video1",
         "format": "{percent}% {icon}",
@@ -206,15 +238,8 @@
         "on-click": "omarchy-theme-menu"
     },
     "custom/power": {
-        "format" : "⏻ ",
-		"tooltip": false,
-		"menu": "on-click",
-		"menu-file": "$HOME/.config/waybar/power_menu.xml", // Menu file in resources folder
-		"menu-actions": {
-			"shutdown": "shutdown",
-			"reboot": "reboot",
-			"suspend": "systemctl suspend",
-			"hibernate": "systemctl hibernate"
-		}
+        "format": "⏻",
+        "tooltip-format": "Power menu",
+        "on-click": "omarchy-rofi-power-menu"
     }
 }
