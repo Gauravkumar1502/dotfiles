@@ -38,3 +38,8 @@ _darcs
 
 # Claude Code local project state - not a dotfile to symlink into $HOME
 ^/\.claude
+
+# Omarchy theme sources, mirroring the omarchy repo's own root-level themes/
+# layout - not a dotfile itself, referenced directly by path (like
+# $OMARCHY_PATH/themes) rather than symlinked into $HOME
+^/themes
