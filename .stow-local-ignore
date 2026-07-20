@@ -35,3 +35,6 @@ _darcs
 
 # Bootstrap/setup scripts aren't dotfiles - never symlink them into $HOME
 ^/setup
+
+# Claude Code local project state - not a dotfile to symlink into $HOME
+^/\.claude

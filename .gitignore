@@ -1,3 +1,6 @@
+# Claude Code local project state (session settings, not a dotfile to share)
+.claude/
+
 # History files
 .zsh_history
 .bash_history
