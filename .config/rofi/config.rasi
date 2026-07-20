@@ -21,9 +21,8 @@ configuration {
 window {
     background-color: @background;
     text-color: @foreground;
-    border: 2px;
-    border-color: @accent-col;
-    border-radius: 8px;
+    border: 0px;
+    border-radius: 0px;
     width: 32%;
     location: center;
     padding: 12px;
@@ -37,7 +36,7 @@ mainbox {
 inputbar {
     background-color: @lighter-background;
     text-color: @foreground;
-    border-radius: 6px;
+    border-radius: 0px;
     padding: 8px 10px;
     children: [ "prompt", "entry" ];
 }
@@ -64,14 +63,30 @@ listview {
     fixed-height: false;
 }
 
+/* Single background for every row - explicitly cover normal/alternate/
+ * urgent/active states so rofi's built-in default theme (which alternates
+ * row background colors) can't show through anywhere. Only the selected
+ * row gets a distinct (higher-contrast) color. */
 element {
     background-color: transparent;
     text-color: @foreground;
     padding: 6px 8px;
-    border-radius: 4px;
+    border-radius: 0px;
 }
 
-element selected {
+element normal.normal,
+element normal.urgent,
+element normal.active,
+element alternate.normal,
+element alternate.urgent,
+element alternate.active {
+    background-color: transparent;
+    text-color: @foreground;
+}
+
+element selected.normal,
+element selected.urgent,
+element selected.active {
     background-color: @accent-col;
     text-color: @background;
 }

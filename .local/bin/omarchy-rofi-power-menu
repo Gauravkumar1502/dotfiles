@@ -1,0 +1,17 @@
+#!/usr/bin/env bash
+# omarchy-rofi-power-menu: rofi-based power menu.
+#
+# Same 5-choice pattern as ericmurphyxyz's powermenu script, reimplemented
+# for rofi + Sway (their current version targets tofi + Hyprland).
+set -uo pipefail
+
+CHOICE=$(printf 'Lock\nSuspend\nReboot\nShutdown\nLog Out' | rofi -dmenu -i -p "Power")
+
+case "$CHOICE" in
+  Lock) exec swaylock ;;
+  Suspend) exec systemctl suspend ;;
+  Reboot) exec systemctl reboot ;;
+  Shutdown) exec systemctl poweroff ;;
+  "Log Out") exec swaymsg exit ;;
+  *) exit 0 ;;
+esac

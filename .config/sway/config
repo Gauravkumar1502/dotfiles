@@ -112,6 +112,10 @@ output HDMI-A-5 {
     # Omarchy-compatible theming: pick a theme via rofi
     bindsym $mod+Shift+t exec omarchy-theme-menu
 
+    # "Rofi for everything": Wi-Fi menu and power menu
+    bindsym $mod+Shift+w exec omarchy-rofi-wifi-menu
+    bindsym $mod+Shift+p exec omarchy-rofi-power-menu
+
     # Drag floating windows by holding down $mod and left mouse button.
     # Resize them with right mouse button + $mod.
     # Despite the name, also works for non-floating windows.

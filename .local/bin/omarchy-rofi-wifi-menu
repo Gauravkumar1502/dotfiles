@@ -1,0 +1,56 @@
+#!/usr/bin/env bash
+# omarchy-rofi-wifi-menu: rofi-based Wi-Fi menu (list/connect/toggle radio).
+#
+# Inspired by ericmurphyxyz/rofi-wifi-menu, reimplemented against nmcli's
+# machine-readable -t/-f output instead of parsing the human-readable table
+# with sed, which is fragile across nmcli versions/locales.
+set -uo pipefail
+
+TOGGLE_STATE=$(nmcli radio wifi)
+if [[ "$TOGGLE_STATE" == "enabled" ]]; then
+  TOGGLE="Disable Wi-Fi"
+else
+  TOGGLE="Enable Wi-Fi"
+fi
+
+mapfile -t NETWORKS < <(
+  nmcli -t -f IN-USE,SSID,SECURITY device wifi list 2>/dev/null |
+    awk -F: '$2 != "" && !seen[$2]++ { printf "%s%s\n", ($1 == "*" ? "* " : "  "), $2 }'
+)
+
+CHOICE=$(
+  { printf '%s\n' "$TOGGLE"; printf '%s\n' "${NETWORKS[@]}"; } |
+    rofi -dmenu -i -p "Wi-Fi"
+)
+
+[[ -z "$CHOICE" ]] && exit 0
+
+case "$CHOICE" in
+  "Enable Wi-Fi")
+    nmcli radio wifi on
+    exit 0
+    ;;
+  "Disable Wi-Fi")
+    nmcli radio wifi off
+    exit 0
+    ;;
+esac
+
+SSID="${CHOICE#\* }"
+SSID="${SSID# }"
+
+if nmcli -t -g NAME connection show | grep -qxF "$SSID"; then
+  if nmcli connection up id "$SSID" >/dev/null 2>&1; then
+    notify-send "Wi-Fi" "Connected to $SSID"
+  else
+    notify-send "Wi-Fi" "Failed to connect to $SSID"
+  fi
+else
+  PASSWORD=$(rofi -dmenu -password -p "Password for $SSID")
+  [[ -z "$PASSWORD" ]] && exit 0
+  if nmcli device wifi connect "$SSID" password "$PASSWORD" >/dev/null 2>&1; then
+    notify-send "Wi-Fi" "Connected to $SSID"
+  else
+    notify-send "Wi-Fi" "Failed to connect to $SSID"
+  fi
+fi
