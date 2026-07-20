@@ -1,0 +1,37 @@
+# GNU Stow ignore list for this package.
+#
+# Stow uses this file INSTEAD of its built-in default ignore list once it
+# exists (it does not merge the two), so the usual defaults are replicated
+# below, followed by our own additions. This replaces passing
+# --ignore='^setup($|/)' on every stow invocation - see README.md.
+#
+# Lines with no "/" are matched against each path segment's basename.
+# Lines containing "/" are matched against the full relative path.
+
+# --- GNU Stow's own built-in defaults (kept so we don't lose them) ---
+RCS
+.+,v
+
+CVS
+\.\#.+       # CVS conflict files / emacs lock files
+\.cvsignore
+
+\.svn
+_darcs
+\.hg
+
+\.git
+\.gitignore
+\.gitmodules
+
+.+~          # emacs backup files
+\#.*\#       # emacs autosave files
+
+^/README.*
+^/LICENSE.*
+^/COPYING
+
+# --- Our additions ---
+
+# Bootstrap/setup scripts aren't dotfiles - never symlink them into $HOME
+^/setup

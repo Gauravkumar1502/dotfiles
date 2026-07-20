@@ -5,7 +5,8 @@ This repository contains my personal configuration files managed with GNU Stow.
 ## Usage
 
 Always run Stow with an explicit target directory (`-t "$HOME"`) so links are created in your home directory.
-This repo keeps setup scripts under `setup/`, so exclude that directory from Stow operations.
+This repo keeps setup scripts under `setup/`, which are excluded from Stow operations via the
+`.stow-local-ignore` file in the repo root (no need to pass `--ignore` on the command line).
 
 Clone and enter the repo first:
 
@@ -18,19 +19,19 @@ cd ~/dotfiles
 
 ```bash
 cd ~/dotfiles
-stow -nvR -t "$HOME" --ignore='^setup($|/)' .
+stow -nvR -t "$HOME" .
 ```
 
 2. Install/update symlinks after preview looks correct:
 
 ```bash
-stow -vR -t "$HOME" --ignore='^setup($|/)' .
+stow -vR -t "$HOME" .
 ```
 
 3. Remove symlinks managed by this repo:
 
 ```bash
-stow -vD -t "$HOME" --ignore='^setup($|/)' .
+stow -vD -t "$HOME" .
 ```
 
 Flags used:
@@ -40,11 +41,14 @@ Flags used:
 - `-R`: restow (relink/update)
 - `-D`: delete/unlink stowed symlinks
 - `-t "$HOME"`: target directory for links
-- `--ignore='^setup($|/)'`: do not stow setup scripts directory
+
+`.stow-local-ignore` replaces Stow's built-in default ignore list (Stow uses one or the other,
+never both), so it also replicates those defaults (`.git`, `README.*`, editor backup files, etc.)
+in addition to excluding `setup/`. Add new exclusion patterns there, not as a CLI flag.
 
 ## Structure
 
-This dotfiles repository follows the same directory structure as the home directory, allowing for easy management with `stow -t "$HOME" --ignore='^setup($|/)' .`.
+This dotfiles repository follows the same directory structure as the home directory, allowing for easy management with `stow -t "$HOME" .`.
 
 ### Currently Managed Configurations
 
@@ -63,7 +67,7 @@ This dotfiles repository follows the same directory structure as the home direct
 1. Create the same directory structure as in your home directory
 2. Copy your config files to the corresponding location in dotfiles
 3. Remove the original files from your home directory
-4. Preview with `stow -nvR -t "$HOME" --ignore='^setup($|/)' .`, then run `stow -vR -t "$HOME" --ignore='^setup($|/)' .`
+4. Preview with `stow -nvR -t "$HOME" .`, then run `stow -vR -t "$HOME" .`
 
 ## Notes
 
