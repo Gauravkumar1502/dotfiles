@@ -22,3 +22,13 @@
 .gnupg/
 .aws/
 .kube/
+
+# Omarchy-compatible theme system: generated at theme-switch time from
+# templates, never hand-edited. See .config/dunst/dunstrc.tpl and
+# .local/bin/omarchy-theme-set-templates.
+.config/dunst/dunstrc
+.config/kitty/current-theme.conf
+
+# Python bytecode cache from the theme-template renderer
+__pycache__/
+*.pyc

@@ -1,0 +1,58 @@
+#!/usr/bin/env bash
+# omarchy-theme-set: activate a theme by name.
+# Usage: omarchy-theme-set <theme-name>
+#
+# Ported from omarchy's bin/omarchy-theme-set for a Sway + Waybar + Rofi +
+# Kitty + Dunst + GTK stack instead of Hyprland/Walker/GNOME. Theme sources
+# live at REPO_ROOT/themes (this dotfiles repo mirrors omarchy's own
+# root-level themes/ layout) rather than a separate ~/.config/omarchy/themes
+# registry, since there's no community-theme-install step here (yet).
+set -uo pipefail
+
+if [[ -z "${1:-}" ]]; then
+  echo "Usage: omarchy-theme-set <theme-name>"
+  exit 1
+fi
+
+SELF_PATH="$(readlink -f "${BASH_SOURCE[0]}")"
+REPO_ROOT="$(cd "$(dirname "$SELF_PATH")/../.." && pwd)"
+THEMES_DIR="$REPO_ROOT/themes"
+CURRENT_DIR="$HOME/.config/omarchy/current"
+
+THEME_NAME=$(echo "$1" | tr '[:upper:]' '[:lower:]' | tr ' ' '-')
+THEME_PATH="$THEMES_DIR/$THEME_NAME"
+
+if [[ ! -d "$THEME_PATH" ]]; then
+  echo "Theme '$THEME_NAME' does not exist in $THEMES_DIR" >&2
+  exit 1
+fi
+
+mkdir -p "$CURRENT_DIR"
+ln -nsf "$THEME_PATH" "$CURRENT_DIR/theme"
+
+omarchy-theme-set-templates
+
+# Restart/reload components so each one re-reads the repointed theme files
+if pgrep -x waybar >/dev/null 2>&1; then
+  pkill -x waybar
+fi
+setsid waybar >/dev/null 2>&1 &
+disown
+
+swaymsg reload >/dev/null 2>&1 || true
+
+if pgrep -x kitty >/dev/null 2>&1; then
+  pkill -SIGUSR1 kitty || true
+fi
+
+if pgrep -x dunst >/dev/null 2>&1; then
+  if command -v dunstctl >/dev/null 2>&1 && dunstctl reload >/dev/null 2>&1; then
+    :
+  else
+    pkill -x dunst
+    setsid dunst >/dev/null 2>&1 &
+    disown
+  fi
+fi
+
+notify-send "Theme changed to $(omarchy-theme-current)" -t 2000 || true

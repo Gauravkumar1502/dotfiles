@@ -25,6 +25,7 @@
         "backlight",
         "sway/language",
         "battery",
+        "custom/theme_menu",
         "clock",
         "tray"
     ],
@@ -198,6 +199,11 @@
         "escape": true,
         "exec": "$HOME/.config/waybar/mediaplayer.py 2> /dev/null" // Script in resources folder
         // "exec": "$HOME/.config/waybar/mediaplayer.py --player spotify 2> /dev/null" // Filter player based on name
+    },
+    "custom/theme_menu": {
+        "format": "🎨",
+        "tooltip-format": "Omarchy theme menu",
+        "on-click": "omarchy-theme-menu"
     },
     "custom/power": {
         "format" : "⏻ ",

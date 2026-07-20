@@ -1,4 +1,9 @@
 # See dunst(5) for all configuration options
+#
+# This is a TEMPLATE, rendered by omarchy-theme-set-templates into the real
+# ~/.config/dunst/dunstrc on every theme switch (dunst has no @import/include
+# mechanism, so the whole file is regenerated). Edit non-color settings here;
+# {{...}} placeholders are theme colors and get substituted at render time.
 
 [global]
     ### Display ###
@@ -111,7 +116,7 @@
     frame_width = 3
 
     # Defines color of the frame around the notification window.
-    frame_color = "#aaaaaa"
+    frame_color = "{{muted}}"
 
     # Size of gap to display between notifications - requires a compositor.
     # If value is greater than 0, separator_height will be ignored and a border
@@ -360,24 +365,24 @@
 [urgency_low]
     # IMPORTANT: colors have to be defined in quotation marks.
     # Otherwise the "#" and following would be interpreted as a comment.
-    background = "#222222"
-    foreground = "#888888"
+    background = "{{dark_background}}"
+    foreground = "{{dark_foreground}}"
     timeout = 10
     # Icon for notifications with low urgency
     default_icon = dialog-information
 
 [urgency_normal]
-    background = "#285577"
-    foreground = "#ffffff"
+    background = "{{background}}"
+    foreground = "{{foreground}}"
     timeout = 10
     override_pause_level = 30
     # Icon for notifications with normal urgency
     default_icon = dialog-information
 
 [urgency_critical]
-    background = "#900000"
-    foreground = "#ffffff"
-    frame_color = "#ff0000"
+    background = "{{darker_background}}"
+    foreground = "{{bright_foreground}}"
+    frame_color = "{{red}}"
     timeout = 0
     override_pause_level = 60
     # Icon for notifications with critical urgency

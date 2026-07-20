@@ -1,0 +1,196 @@
+#!/usr/bin/env python3
+"""Render the active theme's colors.toml into per-app color files.
+
+Mirrors omarchy's own bin/omarchy-theme-set-templates, but targets
+Sway/Waybar/Rofi/Kitty/Dunst/GTK instead of Hyprland/Walker/GNOME-on-GNOME.
+Reads ~/.config/omarchy/current/theme/colors.toml (the single source of
+truth, same schema omarchy themes ship) and writes generated files next to
+it, plus two special cases that have no include/import mechanism of their
+own: dunst (whole ~/.config/dunst/dunstrc regenerated from a template) and
+GTK (settings.ini files + gsettings, since GTK theming is imperative).
+
+This script locates the dotfiles repo itself via its own path rather than
+a hardcoded clone location or env var, so it works regardless of where the
+repo was cloned to.
+"""
+import re
+import subprocess
+import sys
+import tomllib
+from pathlib import Path
+
+REPO_ROOT = Path(__file__).resolve().parents[2]
+HOME = Path.home()
+
+CURRENT_THEME_DIR = HOME / ".config/omarchy/current/theme"
+TEMPLATES_DIR = REPO_ROOT / "default/themed"
+DUNST_TEMPLATE = REPO_ROOT / ".config/dunst/dunstrc.tpl"
+DUNST_OUTPUT = HOME / ".config/dunst/dunstrc"
+MODE_FILE = HOME / ".config/omarchy/current/theme.mode"
+
+# Kitty only reads current-theme.conf from its OWN config dir (see the
+# BEGIN/END_KITTY_THEME block in kitty.conf) - it never sees anything written
+# under ~/.config/omarchy/current/theme/, so the rendered kitty-colors.conf
+# also gets copied there directly.
+KITTY_TEMPLATE_NAME = "kitty-colors.conf.tpl"
+KITTY_OUTPUT = HOME / ".config/kitty/current-theme.conf"
+
+FALLBACK_HARD_DEFAULTS = {
+    "background": "#1e1e2e",
+    "foreground": "#cdd6f4",
+    "red": "#f38ba8",
+    "green": "#a6e3a1",
+    "yellow": "#f9e2af",
+    "blue": "#89b4fa",
+    "magenta": "#cba6f7",
+    "cyan": "#94e2d5",
+}
+
+# key -> ordered list of keys to fall back to when missing from colors.toml
+FALLBACK_CHAIN = {
+    "accent": ["blue"],
+    "selection": ["lighter_background", "background"],
+    "muted": ["dark_foreground", "foreground"],
+    "dark_background": ["background"],
+    "darker_background": ["dark_background", "background"],
+    "lighter_background": ["background"],
+    "dark_foreground": ["foreground"],
+    "light_foreground": ["foreground"],
+    "bright_foreground": ["foreground"],
+    "orange": ["yellow"],
+    "brown": ["red"],
+    "bright_red": ["red"],
+    "bright_green": ["green"],
+    "bright_yellow": ["yellow"],
+    "bright_blue": ["blue"],
+    "bright_magenta": ["magenta"],
+    "bright_cyan": ["cyan"],
+}
+
+ALL_KEYS = (
+    ["background", "foreground", "accent", "selection", "muted"]
+    + ["dark_background", "darker_background", "lighter_background"]
+    + ["dark_foreground", "light_foreground", "bright_foreground"]
+    + ["red", "green", "yellow", "blue", "magenta", "cyan", "orange", "brown"]
+    + [
+        "bright_red",
+        "bright_green",
+        "bright_yellow",
+        "bright_blue",
+        "bright_magenta",
+        "bright_cyan",
+    ]
+)
+
+
+def resolve_colors(raw):
+    resolved = {}
+
+    def resolve(key, seen=()):
+        if key in resolved:
+            return resolved[key]
+        if key in raw:
+            resolved[key] = raw[key]
+            return resolved[key]
+        if key in seen:
+            return None
+        for fallback_key in FALLBACK_CHAIN.get(key, []):
+            value = resolve(fallback_key, seen + (key,))
+            if value is not None:
+                resolved[key] = value
+                return value
+        if key in FALLBACK_HARD_DEFAULTS:
+            resolved[key] = FALLBACK_HARD_DEFAULTS[key]
+            return resolved[key]
+        return None
+
+    for key in ALL_KEYS:
+        value = resolve(key)
+        if value is None:
+            print(f"warning: no color for '{key}', using #888888", file=sys.stderr)
+            value = "#888888"
+            resolved[key] = value
+
+    return resolved
+
+
+def render(template_text, colors):
+    def substitute(match):
+        key = match.group(1)
+        return str(colors.get(key, "#888888"))
+
+    return re.sub(r"\{\{(\w+)\}\}", substitute, template_text)
+
+
+def set_gtk(mode, theme_dir):
+    prefer = "prefer-light" if mode == "light" else "prefer-dark"
+    dark_bool = "0" if mode == "light" else "1"
+    gtk_theme = "Adwaita" if mode == "light" else "Adwaita-dark"
+
+    for gtk_dir, section in (("gtk-3.0", "Settings"), ("gtk-4.0", "Settings")):
+        path = HOME / ".config" / gtk_dir / "settings.ini"
+        path.parent.mkdir(parents=True, exist_ok=True)
+        path.write_text(
+            f"[{section}]\n"
+            f"gtk-application-prefer-dark-theme={dark_bool}\n"
+            f"gtk-theme-name={gtk_theme}\n"
+        )
+
+    def gsettings(schema_key, value):
+        try:
+            subprocess.run(
+                ["gsettings", "set", "org.gnome.desktop.interface", schema_key, value],
+                check=False,
+                stdout=subprocess.DEVNULL,
+                stderr=subprocess.DEVNULL,
+                timeout=5,
+            )
+        except (FileNotFoundError, subprocess.TimeoutExpired):
+            pass
+
+    gsettings("color-scheme", prefer)
+    gsettings("gtk-theme", gtk_theme)
+
+    icons_file = theme_dir / "icons.theme"
+    if icons_file.is_file():
+        icon_theme = icons_file.read_text().strip()
+        if icon_theme:
+            gsettings("icon-theme", icon_theme)
+
+
+def main():
+    colors_toml = CURRENT_THEME_DIR / "colors.toml"
+    if not colors_toml.is_file():
+        print(f"error: {colors_toml} not found (no theme set?)", file=sys.stderr)
+        sys.exit(1)
+
+    with colors_toml.open("rb") as f:
+        raw = tomllib.load(f)
+
+    colors = resolve_colors(raw)
+    mode = raw.get("mode", "dark")
+
+    if not TEMPLATES_DIR.is_dir():
+        print(f"error: templates dir {TEMPLATES_DIR} not found", file=sys.stderr)
+        sys.exit(1)
+
+    for tpl_path in sorted(TEMPLATES_DIR.glob("*.tpl")):
+        output_name = tpl_path.name[: -len(".tpl")]
+        rendered = render(tpl_path.read_text(), colors)
+        (CURRENT_THEME_DIR / output_name).write_text(rendered)
+        if tpl_path.name == KITTY_TEMPLATE_NAME:
+            KITTY_OUTPUT.parent.mkdir(parents=True, exist_ok=True)
+            KITTY_OUTPUT.write_text(rendered)
+
+    if DUNST_TEMPLATE.is_file():
+        DUNST_OUTPUT.parent.mkdir(parents=True, exist_ok=True)
+        DUNST_OUTPUT.write_text(render(DUNST_TEMPLATE.read_text(), colors))
+
+    MODE_FILE.parent.mkdir(parents=True, exist_ok=True)
+    MODE_FILE.write_text(mode + "\n")
+
+    set_gtk(mode, CURRENT_THEME_DIR.resolve())
+
+
+if __name__ == "__main__":
+    main()

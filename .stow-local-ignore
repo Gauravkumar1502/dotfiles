@@ -43,3 +43,8 @@ _darcs
 # layout - not a dotfile itself, referenced directly by path (like
 # $OMARCHY_PATH/themes) rather than symlinked into $HOME
 ^/themes
+
+# Theme template fragments (colors.toml -> per-app color file), mirroring
+# omarchy's own root-level default/themed/ - read directly by path, not
+# a dotfile to symlink into $HOME
+^/default

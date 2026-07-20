@@ -1,0 +1,33 @@
+#!/usr/bin/env bash
+# omarchy-theme-menu: rofi picker over the themes/ folder in this dotfiles repo.
+set -uo pipefail
+
+SELF_PATH="$(readlink -f "${BASH_SOURCE[0]}")"
+REPO_ROOT="$(cd "$(dirname "$SELF_PATH")/../.." && pwd)"
+THEMES_DIR="$REPO_ROOT/themes"
+
+declare -A NAME_FOR_LABEL=()
+LABELS=()
+
+while IFS= read -r path; do
+  raw_name=$(basename "$path")
+  label=$(echo "$raw_name" | sed -E 's/(^|-)([a-z])/\1\u\2/g; s/-/ /g')
+  NAME_FOR_LABEL["$label"]="$raw_name"
+  LABELS+=("$label")
+done < <(find "$THEMES_DIR" -mindepth 1 -maxdepth 1 -type d 2>/dev/null | sort)
+
+if [[ ${#LABELS[@]} -eq 0 ]]; then
+  notify-send "No themes found in $THEMES_DIR" -t 3000
+  exit 1
+fi
+
+CHOICE=$(printf '%s\n' "${LABELS[@]}" | rofi -dmenu -i -p "Theme" -mesg "$(omarchy-theme-current) is active")
+
+[[ -z "$CHOICE" ]] && exit 0
+
+THEME_NAME="${NAME_FOR_LABEL[$CHOICE]:-}"
+if [[ -z "$THEME_NAME" ]]; then
+  exit 0
+fi
+
+omarchy-theme-set "$THEME_NAME"

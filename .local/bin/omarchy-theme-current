@@ -1,0 +1,12 @@
+#!/usr/bin/env bash
+# omarchy-theme-current: print the active theme's prettified name.
+set -uo pipefail
+
+CURRENT_THEME_LINK="$HOME/.config/omarchy/current/theme"
+
+if [[ ! -e "$CURRENT_THEME_LINK" ]]; then
+  echo "No theme set"
+  exit 0
+fi
+
+basename "$(readlink -f "$CURRENT_THEME_LINK")" | sed -E 's/(^|-)([a-z])/\1\u\2/g; s/-/ /g'
