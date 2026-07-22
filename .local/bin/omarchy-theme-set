@@ -15,7 +15,13 @@ if [[ -z "${1:-}" ]]; then
 fi
 
 SELF_PATH="$(readlink -f "${BASH_SOURCE[0]}")"
-REPO_ROOT="$(cd "$(dirname "$SELF_PATH")/../.." && pwd)"
+SELF_DIR="$(dirname "$SELF_PATH")"
+# Guarantee sibling omarchy-* scripts resolve below, regardless of the
+# caller's PATH - sway's own exec environment does NOT include ~/.local/bin
+# (confirmed via `swaymsg exec 'echo $PATH'`), so bare-name calls from a
+# sway bindsym (or anything else with a minimal PATH) would otherwise fail.
+export PATH="$SELF_DIR:$PATH"
+REPO_ROOT="$(cd "$SELF_DIR/../.." && pwd)"
 THEMES_DIR="$REPO_ROOT/themes"
 CURRENT_DIR="$HOME/.config/omarchy/current"
 

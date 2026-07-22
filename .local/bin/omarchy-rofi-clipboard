@@ -1,0 +1,34 @@
+#!/usr/bin/env bash
+# omarchy-rofi-clipboard: rofi "script mode" for cliphist with real image
+# thumbnails, instead of a text placeholder line for image entries.
+#
+# Adapted from cliphist's own contrib/cliphist-rofi-img. Rofi script mode
+# calls this with no args to build the list, then calls it again with the
+# chosen line as $1 once the user picks something.
+set -uo pipefail
+
+TMP_DIR="/tmp/cliphist"
+
+if [[ -n "${1:-}" ]]; then
+  cliphist decode <<<"$1" | wl-copy
+  exit 0
+fi
+
+rm -rf "$TMP_DIR"
+mkdir -p "$TMP_DIR"
+
+# For entries cliphist reports as a binary image (jpg/jpeg/png/bmp), decode
+# just that one entry to a temp file and tag the row with rofi's
+# "\0icon\x1f<path>" convention so it renders as a real thumbnail. Plain
+# text entries pass through unchanged.
+read -r -d '' AWK_PROGRAM <<'EOF'
+/^[0-9]+\s<meta http-equiv=/ { next }
+match($0, /^([0-9]+)\s(\[\[\s)?binary.*(jpg|jpeg|png|bmp)/, grp) {
+    system("echo " grp[1] "\\\t | cliphist decode >" tmp_dir "/" grp[1] "." grp[3])
+    print $0 "\0icon\x1f" tmp_dir "/" grp[1] "." grp[3]
+    next
+}
+1
+EOF
+
+cliphist list | gawk -v tmp_dir="$TMP_DIR" "$AWK_PROGRAM"

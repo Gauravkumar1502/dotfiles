@@ -97,8 +97,12 @@ output HDMI-A-5 {
     # Open file manager/home folder
     bindsym $mod+Shift+f exec $file_manager
 
-    # Open clipboard history menu (text/images) and copy selection back to clipboard
-    bindsym $mod+v exec cliphist list | rofi -dmenu -i -p "Clipboard" | cliphist decode | wl-copy
+    # Open clipboard history menu with real image thumbnails (not just a
+    # "[[ binary data ... ]]" text line) and copy selection back to clipboard.
+    # -theme-str bumps the icon up from the shared config.rasi's default
+    # 1.2em (~17px, sized for tiny app-launcher icons, easy to miss here) to
+    # something actually visible, scoped to just this menu.
+    bindsym $mod+v exec rofi -modi "clipboard:$HOME/.local/bin/omarchy-rofi-clipboard" -show clipboard -show-icons -theme-str 'element-icon { size: 56px; }'
 
     # Screenshot selected region to clipboard
     bindsym $mod+Shift+s exec grim -g "$(slurp)" - | wl-copy
@@ -110,11 +114,11 @@ output HDMI-A-5 {
     bindsym $mod+space exec $menu
 
     # Omarchy-compatible theming: pick a theme via rofi
-    bindsym $mod+Shift+t exec omarchy-theme-menu
+    bindsym $mod+Shift+t exec $HOME/.local/bin/omarchy-theme-menu
 
     # "Rofi for everything": Wi-Fi menu and power menu
-    bindsym $mod+Shift+w exec omarchy-rofi-wifi-menu
-    bindsym $mod+Shift+p exec omarchy-rofi-power-menu
+    bindsym $mod+Shift+w exec $HOME/.local/bin/omarchy-rofi-wifi-menu
+    bindsym $mod+Shift+p exec $HOME/.local/bin/omarchy-rofi-power-menu
 
     # Drag floating windows by holding down $mod and left mouse button.
     # Resize them with right mouse button + $mod.

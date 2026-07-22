@@ -3,7 +3,11 @@
 set -uo pipefail
 
 SELF_PATH="$(readlink -f "${BASH_SOURCE[0]}")"
-REPO_ROOT="$(cd "$(dirname "$SELF_PATH")/../.." && pwd)"
+SELF_DIR="$(dirname "$SELF_PATH")"
+# Guarantee sibling omarchy-* scripts resolve below, regardless of the
+# caller's PATH - see the comment in omarchy-theme-set for why this matters.
+export PATH="$SELF_DIR:$PATH"
+REPO_ROOT="$(cd "$SELF_DIR/../.." && pwd)"
 THEMES_DIR="$REPO_ROOT/themes"
 
 declare -A NAME_FOR_LABEL=()

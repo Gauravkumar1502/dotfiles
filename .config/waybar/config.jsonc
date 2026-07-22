@@ -235,11 +235,11 @@
     "custom/theme_menu": {
         "format": "🎨",
         "tooltip-format": "Omarchy theme menu",
-        "on-click": "omarchy-theme-menu"
+        "on-click": "$HOME/.local/bin/omarchy-theme-menu"
     },
     "custom/power": {
         "format": "⏻",
         "tooltip-format": "Power menu",
-        "on-click": "omarchy-rofi-power-menu"
+        "on-click": "$HOME/.local/bin/omarchy-rofi-power-menu"
     }
 }
